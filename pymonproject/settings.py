@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'safarank'
 ]
 
 MIDDLEWARE = [
@@ -75,15 +76,14 @@ WSGI_APPLICATION = 'pymonproject.wsgi.application'
 
 DATABASES = {
 
-    'default': {
+    'mongodb': {
         'ENGINE': 'django_mongodb_backend',
         'HOST': 'mongodb://localhost:27017/',
         'NAME': 'safarank'
-    }
-
-
-
-
+    },
+    'default':{
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',}
 
 }
 
@@ -123,3 +123,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+AUTH_USER_MODEL = 'safarank.Usuario'
