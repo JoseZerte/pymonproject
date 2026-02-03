@@ -1,0 +1,116 @@
+/* safarank/static/css/estilos.css */
+
+/* 1. Variables de colores (Estilo Xiaomi) */
+:root {
+    --primary-color: #FF6900; /* Naranja Xiaomi */
+    --primary-hover: #e05e00;
+    --bg-color: #f2f2f2;      /* Gris muy suave de fondo */
+    --card-bg: #ffffff;
+    --text-dark: #212121;
+    --text-light: #757575;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Sombra elegante */
+}
+
+/* 2. Reset básico y centrado */
+body {
+    background-color: var(--bg-color);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical */
+}
+
+/* 3. La tarjeta (Card) del formulario */
+.auth-card {
+    background-color: var(--card-bg);
+    padding: 2.5rem; /* Espacio interior generoso */
+    width: 100%;
+    max-width: 400px; /* Que no sea gigante en pantallas grandes */
+    border-radius: 16px; /* Bordes redondeados modernos */
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+/* 4. Títulos */
+.auth-card h2 {
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+/* 5. Estilizando los campos automáticos de Django ({{ form.as_p }}) */
+.auth-form p {
+    text-align: left;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+/* Esto selecciona los inputs (cajas de texto) que genera Django */
+.auth-form input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Para que el padding no rompa el ancho */
+    transition: all 0.3s ease;
+    background-color: #fafafa;
+}
+
+/* Efecto al hacer clic en un input */
+.auth-form input:focus {
+    border-color: var(--primary-color);
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 105, 0, 0.1);
+}
+
+/* Ocultamos los textos de ayuda de Django que a veces molestan visualmente */
+.helptext {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 4px;
+}
+
+/* 6. El botón de acción */
+.btn-submit {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 50px; /* Botón píldora */
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* 7. Enlaces (footer) */
+.auth-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}

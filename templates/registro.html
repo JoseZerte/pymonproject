@@ -1,7 +1,29 @@
-<h2>Registro de Nuevo Usuario</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Crear Cuenta</button>
-</form>
-<p>¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a></p>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta | Safarank</title>
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+</head>
+<body>
+
+    <div class="auth-card">
+        <h2>Crear Cuenta</h2>
+
+        <form method="POST" class="auth-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-submit">Registrarse</button>
+        </form>
+
+        <div class="auth-footer">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+        </div>
+    </div>
+
+</body>
+</html>
