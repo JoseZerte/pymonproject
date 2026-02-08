@@ -1,34 +1,26 @@
-{% load static %} <!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Ranking Xiaomi - Safarank</title>
-    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
-</head>
-<body>
-    <div class="auth-card" style="max-width: 800px;"> <h1>Bienvenido, {{ nombre_usuario }}!</h1>
-        <p>Tu rol actual es: <span class="badge" style="background: var(--primary-color); color: white; padding: 5px 10px; border-radius: 10px;">{{ rol_usuario }}</span></p>
-
-        <hr>
-
-        <h3>TOP Dispositivos Xiaomi</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <thead style="background-color: #f8f8f8;">
-                <tr>
-                    <th style="padding: 10px; border-bottom: 2px solid var(--primary-color);">Modelo</th>
-                    <th style="padding: 10px; border-bottom: 2px solid var(--primary-color);">Puntuación</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee;">Xiaomi 14 Ultra</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #eee;">9.8</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <br>
-        <a href="{% url 'logout' %}" class="footer-link">Cerrar sesión de forma segura</a>
-    </div>
-</body>
-</html>
+<table>
+    <thead>
+        <tr>
+            <th>Imagen</th>
+            <th>Modelo</th>
+            <th>Puntuación</th>
+            <th>Precio</th>
+            <th>RAM/Storage</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movil in moviles %}
+        <tr>
+            <td><img src="{{ movil.imgURL }}" width="50"></td>
+            <td>**{{ movil.name }}**</td>
+            <td>⭐ {{ movil.ratings }}</td>
+            <td>{{ movil.price }} ₹</td>
+            <td>{{ movil.ram }}GB / {{ movil.storage }}GB</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No hay datos en la base de datos de MongoDB.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
