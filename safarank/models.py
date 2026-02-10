@@ -72,7 +72,7 @@ class MovilXiaomi(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'safarank'  # Tu colección de móviles
+        db_table = 'xiaomirank'  # Tu colección de móviles
 
     def __str__(self):
         return self.name
