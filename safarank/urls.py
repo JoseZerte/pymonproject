@@ -1,11 +1,23 @@
+from django.contrib import admin
 from django.urls import path
-from . import views # Importamos tus vistas de login/registro
+from safarank import views
 
 urlpatterns = [
-    # Si quieres que la página principal sea el login, deja la ruta vacía ''
+    path('admin/', admin.site.urls),  # Admin de Django (opcional si usas el tuyo propio)
+
+    # Auth
     path('', views.login_usuario, name='login'),
     path('registro/', views.registrar_usuario, name='registro'),
     path('logout/', views.logout_usuario, name='logout'),
-    # Esta es la página a la que irá el usuario tras loguearse (el ranking)
+
+    # Principal
     path('inicio/', views.inicio, name='inicio'),
+
+    # Nuevas funcionalidades
+    path('movil/<int:movil_id>/', views.detalle_movil, name='detalle_movil'),
+    path('mis-rankings/', views.mis_rankings, name='mis_rankings'),
+
+    # Administración Custom
+    path('panel-admin/', views.panel_administracion, name='panel_administracion'),
+    path('cargar-datos/', views.cargar_datos, name='cargar_datos'),
 ]

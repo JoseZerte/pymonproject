@@ -1,52 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Cargar Datos - Xiaomi Rank</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends 'base.html' %}
 
-<nav class="navbar navbar-dark bg-dark mb-5 shadow">
-    <div class="container">
-        <a class="navbar-brand" href="/inicio/">XIAOMI <strong>RANK</strong></a>
-        <a href="/inicio/" class="btn btn-outline-light btn-sm">Volver al Inicio</a>
-    </div>
-</nav>
-
-<div class="container">
+{% block content %}
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-warning text-dark fw-bold">
-                    📂 Importación de Datos (Admin)
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="bi bi-folder-plus"></i> Importación de Datos (Admin)</h4>
                 </div>
-                <div class="card-body p-4">
-                    <h5 class="card-title mb-3">Actualizar Catálogo</h5>
-                    <p class="text-muted small">Sube un archivo CSV con las columnas: <code>name, price, ratings, imgURL, ram, storage</code>.</p>
+                <div class="card-body">
+
+                    <h5 class="card-title">Actualizar Catálogo</h5>
+                    <p class="card-text text-muted">
+                        Sube un archivo CSV con las columnas: <code>name, price, ratings, imgURL, ram, storage</code>.
+                    </p>
+
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
 
                     {% if mensaje %}
-                        <div class="alert alert-success">{{ mensaje }}</div>
-                    {% endif %}
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error }}</div>
+                        <div class="alert alert-success" role="alert">
+                            {{ mensaje }}
+                        </div>
                     {% endif %}
 
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="csv_file" class="form-label">Selecciona tu archivo CSV</label>
-                            <input type="file" class="form-control" id="csv_file" name="csv_file" accept=".csv" required>
+
+                        <div class="mb-3">
+                            <label for="csvFile" class="form-label">Selecciona tu archivo CSV</label>
+                            <input class="form-control" type="file" id="csvFile" name="csvFile" accept=".csv" required>
                         </div>
-                        <div class="d-grid">
+
+                        <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-dark">Subir y Procesar</button>
+                            <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">Volver al Inicio</a>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-</body>
-</html>
+{% endblock %}

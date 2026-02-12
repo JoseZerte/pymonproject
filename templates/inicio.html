@@ -4,25 +4,60 @@
     <meta charset="UTF-8">
     <title>Xiaomi Safarank - Tu Ranking</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
     <style>
         :root { --xiaomi-orange: #ff6700; }
         .navbar { background-color: #333; }
+        /* Efecto hover suave en las tarjetas */
         .card-xiaomi { border: none; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .card-xiaomi:hover { transform: translateY(-5px); }
+        .card-xiaomi:hover { transform: translateY(-5px); box-shadow: 0 8px 12px rgba(0,0,0,0.15); }
+
         .price-tag { color: var(--xiaomi-orange); font-size: 1.2rem; font-weight: bold; }
+        .btn-xiaomi { background-color: var(--xiaomi-orange); color: white; border: none; }
+        .btn-xiaomi:hover { background-color: #e05b00; color: white; }
     </style>
 </head>
 <body class="bg-light">
 
 <nav class="navbar navbar-expand-lg navbar-dark mb-4">
     <div class="container">
-        <a class="navbar-brand" href="#">XIAOMI <strong>RANK</strong></a>
-        <div class="navbar-text text-white">
-            Hola, {{ nombre_usuario }} ({{ rol_usuario }}) |
-            {% if rol_usuario == 'admin' %}
-                <a href="/cargar-datos/" class="btn btn-sm btn-warning">Cargar CSV</a>
-            {% endif %}
-            <a href="/logout/" class="btn btn-sm btn-outline-danger ms-2">Salir</a>
+        <a class="navbar-brand fw-bold" href="{% url 'inicio' %}">XIAOMI <span style="color: var(--xiaomi-orange);">RANK</span></a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'inicio' %}">Catálogo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mis_rankings' %}">Mis Rankings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Estadísticas</a>
+                </li>
+            </ul>
+
+            <div class="navbar-text text-white d-flex align-items-center gap-2">
+                <span class="me-2">Hola, {{ nombre_usuario }}</span>
+
+                {% if rol_usuario == 'admin' %}
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Admin
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'cargar_datos' %}">Cargar CSV</a></li>
+                            <li><a class="dropdown-item" href="{% url 'panel_administracion' %}">Panel Global</a></li>
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-light">Salir</a>
+            </div>
         </div>
     </div>
 </nav>
@@ -32,26 +67,46 @@
 
     <div class="row g-4">
         {% for movil in moviles %}
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6">
             <div class="card h-100 card-xiaomi">
-                <img src="{{ movil.imgURL }}" class="card-img-top p-3" alt="{{ movil.name }}" style="height: 200px; object-fit: contain;">
+                <a href="{% url 'detalle_movil' movil.id %}">
+                    <img src="{{ movil.imgURL }}" class="card-img-top p-3" alt="{{ movil.name }}"
+                         style="height: 200px; object-fit: contain;"
+                         onerror="this.src='https://via.placeholder.com/200?text=Sin+Imagen'">
+                </a>
+
                 <div class="card-body d-flex flex-column">
-                    <h6 class="card-title">{{ movil.name }}</h6>
+                    <h6 class="card-title text-truncate" title="{{ movil.name }}">{{ movil.name }}</h6>
+
                     <div class="mt-auto">
-                        <p class="mb-1 text-muted small">RAM: {{ movil.ram }}GB | ROM: {{ movil.storage }}GB</p>
-                        <div class="d-flex justify-content-between align-items-center">
+                        <p class="mb-2 text-muted small">RAM: {{ movil.ram }}GB | ROM: {{ movil.storage }}GB</p>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="price-tag">{{ movil.price }} €</span>
                             <span class="badge bg-success">★ {{ movil.ratings }}</span>
                         </div>
+
+                        <a href="{% url 'detalle_movil' movil.id %}" class="btn btn-xiaomi w-100 btn-sm">
+                            Ver y Votar
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="alert alert-info">No hay móviles cargados en MongoDB.</div>
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                No hay móviles cargados en MongoDB.
+                {% if rol_usuario == 'admin' %}
+                    <a href="{% url 'cargar_datos' %}" class="alert-link">Carga un CSV aquí</a>.
+                {% endif %}
+            </div>
+        </div>
         {% endfor %}
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
