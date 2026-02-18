@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 fw-bold">Catálogo de Móviles</h2>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Menú
+        </a>
+    </div>
+
+    <div class="row g-4">
+        {% for movil in moviles %}
+        <div class="col-md-3 col-sm-6">
+            <div class="card h-100 card-xiaomi shadow-sm">
+                <a href="{% url 'detalle_movil' movil.id %}">
+                    <img src="{{ movil.imgURL }}" class="card-img-top p-3" alt="{{ movil.name }}"
+                         style="height: 200px; object-fit: contain;"
+                         onerror="this.src='https://via.placeholder.com/200?text=Sin+Imagen'">
+                </a>
+
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title text-truncate" title="{{ movil.name }}">{{ movil.name }}</h6>
+
+                    <div class="mt-auto">
+                        <p class="mb-2 text-muted small">RAM: {{ movil.ram }}GB | ROM: {{ movil.storage }}GB</p>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="price-tag">{{ movil.price }} €</span>
+                            <span class="badge bg-success">★ {{ movil.ratings }}</span>
+                        </div>
+
+                        <a href="{% url 'detalle_movil' movil.id %}" class="btn btn-xiaomi w-100 btn-sm">
+                            Ver y Votar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                No hay móviles cargados en MongoDB.
+                {% if rol_usuario == 'admin' %}
+                    <a href="{% url 'cargar_datos' %}" class="alert-link">Carga un CSV aquí</a>.
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    Crear Nuevo Ranking
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary w-100">Crear Lista</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <h3 class="mb-3">Mis Listas Personales</h3>
+            <div class="row g-3">
+                {% for ranking in rankings %}
+                <div class="col-md-6">
+                    <div class="card h-100 border-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ ranking.nombre }}</h5>
+                            <p class="card-text text-muted">
+                                {{ ranking.elementos|length }} elementos guardados
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                {% if ranking.id %}
+                                    <a href="{% url 'ver_ranking' ranking.id %}" class="btn btn-outline-primary btn-sm">
+                                        Ver contenido
+                                    </a>
+                                    <a href="{% url 'borrar_ranking' ranking.id %}" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Borrar esta lista?');">
+                                        Eliminar
+                                    </a>
+                                {% else %}
+                                    <span class="text-danger small">⚠️ Error: Lista sin ID</span>
+                                    <button class="btn btn-sm btn-outline-secondary disabled">No disponible</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-info">No tienes ninguna lista creada. ¡Crea una a la izquierda!</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

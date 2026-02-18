@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
-# Importamos JSONField para manejar listas en MongoDB (funciona mejor que ArrayField a veces)
+# Importamos JSONField para manejar listas en MongoDB
 from django.db.models import JSONField
 
 
@@ -110,6 +110,9 @@ class Valoracion(models.Model):
 
 
 class RankingPersonal(models.Model):
+    # --- CORRECCIÓN CRÍTICA: ID MANUAL OBLIGATORIO ---
+    id = models.IntegerField(primary_key=True)
+
     user_email = models.CharField(max_length=150)
     nombre = models.CharField(max_length=150)
     # Lista de IDs de móviles

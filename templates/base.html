@@ -16,13 +16,16 @@
         .btn-xiaomi { background-color: var(--xiaomi-orange); color: white; border: none; }
         .btn-xiaomi:hover { background-color: #e05b00; color: white; }
         footer { margin-top: auto; }
+
+        /* Estilos para el Drag & Drop */
+        .item-movil.sortable-ghost { opacity: 0.4; background-color: #f0f0f0; border: 2px dashed #ccc; }
     </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark mb-4 shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'inicio' %}">
+            <a class="navbar-brand fw-bold" href="{% url 'dashboard' %}">
                 XIAOMI <span style="color: var(--xiaomi-orange);">RANK</span>
             </a>
 
@@ -33,7 +36,7 @@
             <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inicio' %}">Catálogo</a>
+                        <a class="nav-link" href="{% url 'catalogo' %}">Catálogo</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'mis_rankings' %}">Mis Rankings</a>
@@ -42,7 +45,7 @@
 
                 <div class="d-flex text-white align-items-center gap-3">
                     {% if user.is_authenticated %}
-                        <span>Hola, {{ user.nombre }}</span>
+                        <span class="d-none d-md-inline">Hola, {{ user.nombre }}</span>
 
                         {% if user.rol == 'admin' %}
                             <div class="dropdown">
@@ -83,7 +86,7 @@
 
     <footer class="bg-dark text-white text-center py-3 mt-5">
         <div class="container">
-            <small>&copy; 2026 Proyecto Xiaomi Rank - Desarrollado con Django y MongoDB</small>
+            <small>&copy; 2024 Proyecto Xiaomi Rank</small>
         </div>
     </footer>
 

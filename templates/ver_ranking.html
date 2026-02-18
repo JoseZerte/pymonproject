@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Ranking: <span class="text-primary">{{ ranking.nombre }}</span></h2>
+            <p class="text-muted">Arrastra los elementos para cambiar el orden</p>
+        </div>
+        <div>
+            <button onclick="guardarOrden()" class="btn btn-success me-2">
+                <i class="bi bi-save"></i> Guardar Orden
+            </button>
+            <a href="{% url 'mis_rankings' %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    <div id="lista-ranking" class="row row-cols-1">
+        {% for movil in moviles %}
+        <div class="col mb-2 item-movil" data-id="{{ movil.id }}">
+            <div class="card shadow-sm flex-row align-items-center p-2" style="cursor: move;">
+                <div class="p-3 fs-3 text-muted">
+                    <i class="bi bi-grip-vertical"></i>
+                </div>
+                <img src="{{ movil.imgURL }}" class="img-fluid" style="height: 80px; width: 80px; object-fit: contain;">
+                <div class="card-body">
+                    <h5 class="card-title mb-0">{{ movil.name }}</h5>
+                    <p class="text-success fw-bold mb-0">{{ movil.price }} €</p>
+                </div>
+                <div class="p-3">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="borrar_movil" value="true">
+                        <input type="hidden" name="movil_id_borrar" value="{{ movil.id }}">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-warning text-center">
+            Esta lista está vacía.
+            <a href="{% url 'catalogo' %}" class="alert-link">Ve al catálogo</a> para añadir móviles.
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    var el = document.getElementById('lista-ranking');
+    var sortable = Sortable.create(el, {
+        animation: 150,
+        ghostClass: 'sortable-ghost'
+    });
+
+    function guardarOrden() {
+        var orden = sortable.toArray();
+        var rankingId = {{ ranking.id }};
+
+        fetch("{% url 'guardar_orden_ranking' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                ranking_id: rankingId,
+                orden: orden
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'ok') {
+                alert("¡Orden guardado correctamente!");
+            } else {
+                alert("Error: " + data.message);
+            }
+        });
+    }
+</script>
+{% endblock %}
