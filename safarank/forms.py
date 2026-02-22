@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from .models import Usuario, Valoracion, RankingPersonal
 
-# --- FORMULARIOS DE USUARIO (SQLite) ---
+#FORMULARIOS DE USUARIO (SQLite)
 
 class RegistroForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -32,7 +32,7 @@ class LoginForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}))
 
 
-# --- FORMULARIOS DE MONGODB (Valoraciones y Rankings) ---
+#FORMULARIOS DE MONGODB (Valoraciones y Rankings)
 
 class ValoracionForm(forms.ModelForm):
     class Meta:

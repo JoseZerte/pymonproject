@@ -2,7 +2,7 @@ import csv
 import io
 import json
 import random
-from collections import defaultdict  # <--- IMPORTANTE PARA ESTADÍSTICAS
+from collections import defaultdict
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,7 @@ from .forms import RegistroForm, LoginForm, ValoracionForm, RankingForm
 from .models import Usuario, MovilXiaomi, Valoracion, RankingPersonal, Categoria
 
 
-# --- AUTENTICACIÓN ---
+#AUTENTICACIÓN
 
 def registrar_usuario(request):
     if request.method == 'POST':
@@ -54,7 +54,7 @@ def logout_usuario(request):
     return redirect('login')
 
 
-# --- VISTAS PRINCIPALES ---
+#VISTAS PRINCIPALES
 
 @login_required(login_url='login')
 def dashboard(request):
@@ -66,20 +66,20 @@ def dashboard(request):
 
 @login_required(login_url='login')
 def catalogo(request):
-    # RF6: Obtener todas las categorías para pintar los botones de filtro
+
     categorias = Categoria.objects.using('mongodb').all()
 
-    # Comprobar si el usuario ha hecho clic en alguna categoría (?cat=1)
+    #Comprobar si el usuario ha hecho clic en alguna categoría (?cat=1)
     cat_id = request.GET.get('cat')
     if cat_id:
         try:
             cat_seleccionada = Categoria.objects.using('mongodb').get(id=int(cat_id))
-            # Traer solo los móviles que estén en la lista de esa categoría
+
             moviles = MovilXiaomi.objects.using('mongodb').filter(id__in=cat_seleccionada.moviles)
         except Categoria.DoesNotExist:
             moviles = MovilXiaomi.objects.using('mongodb').all()
     else:
-        # Si no hay filtro, mostramos todos
+        # si no hay filtro mostramos todos
         moviles = MovilXiaomi.objects.using('mongodb').all()
 
     mis_listas = RankingPersonal.objects.using('mongodb').filter(user_email=request.user.email)
@@ -101,14 +101,14 @@ def catalogo(request):
                     messages.info(request, f"El móvil ya estaba en la lista '{ranking.nombre}'")
             except Exception as e:
                 messages.error(request, f"Error: {e}")
-        # Mantenemos el filtro al recargar
+        #mantenemos el filtro al recargar
         url_redirect = f"/catalogo/?cat={cat_id}" if cat_id else "/catalogo/"
         return redirect(url_redirect)
 
     return render(request, 'catalogo.html', {
         'moviles': moviles,
         'mis_listas': mis_listas,
-        'categorias': categorias,  # Pasamos las categorías al HTML
+        'categorias': categorias,
         'cat_actual': int(cat_id) if cat_id else None
     })
 
@@ -121,7 +121,7 @@ def detalle_movil(request, movil_id):
         messages.error(request, "El móvil no existe.")
         return redirect('catalogo')
 
-    # 1. SOLUCIÓN AL CRASH: Buscamos la valoración más reciente (evita el error de si hay 2)
+
     mi_valoracion = Valoracion.objects.using('mongodb').filter(
         user_email=request.user.email,
         movil_id=movil_id
@@ -129,7 +129,7 @@ def detalle_movil(request, movil_id):
 
     ya_votado = mi_valoracion is not None
 
-    # 2. Lógica para guardar o editar la valoración
+    #logica para guardar o editar la valoracion
     if request.method == 'POST' and 'btn_votar' in request.POST:
         puntos = request.POST.get('rating')
         comentario = request.POST.get('comentario')
@@ -145,7 +145,7 @@ def detalle_movil(request, movil_id):
             mi_valoracion.comentario = comentario
             mi_valoracion.save(using='mongodb')
 
-            # Limpieza silenciosa: borramos duplicados viejos si los hubiera
+
             Valoracion.objects.using('mongodb').filter(
                 user_email=request.user.email, movil_id=movil_id
             ).exclude(id=mi_valoracion.id).delete()
@@ -156,7 +156,7 @@ def detalle_movil(request, movil_id):
         else:
             messages.error(request, "Selecciona al menos una estrella.")
 
-    # 3. Lógica del Ranking
+    #logica del ranking
     mis_listas = RankingPersonal.objects.using('mongodb').filter(user_email=request.user.email)
 
     if request.method == 'POST' and 'btn_ranking' in request.POST:
@@ -220,7 +220,7 @@ def ver_ranking(request, ranking_id):
     if ranking.user_email != request.user.email:
         return redirect('dashboard')
 
-    # MIGRACIÓN AUTOMÁTICA: Convertir lista antigua a Tier List
+    # convertir lista antigua a tierli
     if isinstance(ranking.elementos, list):
         ranking.elementos = {
             'S': [], 'A': [], 'B': [], 'C': [], 'D': [],
@@ -228,14 +228,14 @@ def ver_ranking(request, ranking_id):
         }
         ranking.save(using='mongodb')
 
-    # Obtener todos los móviles que están en alguna caja
+    # todos los móviles que est
     all_ids = []
     for ids in ranking.elementos.values():
         all_ids.extend(ids)
 
     moviles_db = {m.id: m for m in MovilXiaomi.objects.using('mongodb').filter(id__in=all_ids)}
 
-    # Construir las cajas con los objetos reales del móvil
+    #  cajas con los objetos
     tiers_data = {
         'S': [moviles_db[i] for i in ranking.elementos.get('S', []) if i in moviles_db],
         'A': [moviles_db[i] for i in ranking.elementos.get('A', []) if i in moviles_db],
@@ -245,7 +245,7 @@ def ver_ranking(request, ranking_id):
         'unranked': [moviles_db[i] for i in ranking.elementos.get('unranked', []) if i in moviles_db],
     }
 
-    # Lógica para borrar un móvil de la Tier List
+    # para borrar un móvil
     if request.method == 'POST' and 'borrar_movil' in request.POST:
         try:
             movil_a_borrar = int(request.POST.get('movil_id_borrar'))
@@ -272,12 +272,12 @@ def guardar_orden_ranking(request):
         try:
             data = json.loads(request.body)
             ranking_id = data.get('ranking_id')
-            nuevas_tiers = data.get('tiers')  # Ahora recibimos las cajas enteras
+            nuevas_tiers = data.get('tiers')
 
             ranking = RankingPersonal.objects.using('mongodb').get(id=ranking_id)
 
             if ranking.user_email == request.user.email:
-                # Convertir todo a números enteros por si acaso
+
                 for tier in nuevas_tiers:
                     nuevas_tiers[tier] = [int(x) for x in nuevas_tiers[tier]]
 
@@ -303,7 +303,7 @@ def borrar_ranking(request, ranking_id):
     return redirect('mis_rankings')
 
 
-# --- ESTADÍSTICAS (ESTO ES LO QUE TE FALTABA) ---
+#ESTADÍSTICAS
 
 @login_required
 def estadisticas(request):
@@ -347,7 +347,7 @@ def estadisticas(request):
     })
 
 
-# --- ADMIN ---
+#ADMIN
 
 @login_required
 def panel_administracion(request):
@@ -419,7 +419,7 @@ def crear_movil(request):
 
     if request.method == 'POST':
         try:
-            # Buscar el ID más alto de Mongo para sumar 1 (Auto-Incremental casero)
+
             ultimo_movil = MovilXiaomi.objects.using('mongodb').order_by('-id').first()
             nuevo_id = (ultimo_movil.id + 1) if ultimo_movil else 1
 
@@ -502,7 +502,6 @@ def crear_categoria(request):
             cat.name = request.POST.get('name')
             cat.description = request.POST.get('description')
 
-            # Recoger la lista de móviles seleccionados
             moviles_seleccionados = request.POST.getlist('moviles')
             cat.moviles = [int(m) for m in moviles_seleccionados]
             cat.save(using='mongodb')
@@ -554,15 +553,15 @@ def borrar_categoria(request, cat_id):
 def estadisticas_globales(request):
 
 
-    # 1. Total de valoraciones (RF9.33)
+
     total_valoraciones = Valoracion.objects.using('mongodb').count()
 
-    # Traemos todo a memoria para calcular seguro sin que MongoDB de errores raros
+
     valoraciones = list(Valoracion.objects.using('mongodb').all())
     moviles = {m.id: m for m in MovilXiaomi.objects.using('mongodb').all()}
     categorias = list(Categoria.objects.using('mongodb').all())
 
-    # Calculamos stats por móvil
+
     stats_m = {}
     for v in valoraciones:
         if v.movil_id not in stats_m:
@@ -570,7 +569,7 @@ def estadisticas_globales(request):
         stats_m[v.movil_id]['votos'] += 1
         stats_m[v.movil_id]['suma'] += v.puntuacion
 
-    # 2. Top Móviles Más Valorados (RF9.31)
+
     top_moviles = []
     for mid, data in stats_m.items():
         if mid in moviles:
@@ -580,9 +579,9 @@ def estadisticas_globales(request):
                 'votos': data['votos']
             })
     top_moviles.sort(key=lambda x: x['media'], reverse=True)
-    top_moviles = top_moviles[:5]  # Solo los 5 mejores
+    top_moviles = top_moviles[:5]
 
-    # 3. Promedio por Categoría (RF9.32)
+
     stats_cat = []
     for cat in categorias:
         c_votos, c_suma = 0, 0
@@ -593,7 +592,7 @@ def estadisticas_globales(request):
         media = round(c_suma / c_votos, 1) if c_votos > 0 else 0
         stats_cat.append({'nombre': cat.name, 'media': media, 'votos': c_votos})
 
-    # 4. Supervisión de Usuarios y Valoraciones Recientes (RF10.36)
+
     from django.contrib.auth import get_user_model
     User = get_user_model()
     usuarios = User.objects.all()

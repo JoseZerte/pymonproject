@@ -2,14 +2,12 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
-
-# Importamos JSONField para manejar listas en MongoDB
 from django.db.models import JSONField
 
 
-# ---------------------------------------------------------
-# 1. GESTIÓN DE USUARIOS (SQLite - Auth)
-# ---------------------------------------------------------
+
+#GESTIÓN DE USUARIOS
+
 
 class UsuarioManager(BaseUserManager):
     def create_user(self, email, nombre, rol, password=None):
@@ -47,9 +45,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-# ---------------------------------------------------------
-# 2. MODELOS DE MONGODB (Datos del negocio)
-# ---------------------------------------------------------
+
+#MODELOS DE MONGODB
+
 
 class MovilXiaomi(models.Model):
     id = models.IntegerField(primary_key=True)
@@ -93,10 +91,10 @@ class Categoria(models.Model):
 
 
 class Valoracion(models.Model):
-    # Relación lógica: Guardamos el email del usuario (SQLite) aquí en Mongo
+
     user_email = models.CharField(max_length=150)
 
-    # Guardamos el ID del móvil de Mongo
+
     movil_id = models.IntegerField()
 
     fecha = models.DateTimeField(default=timezone.now)
@@ -114,12 +112,12 @@ class Valoracion(models.Model):
 
 
 class RankingPersonal(models.Model):
-    # --- CORRECCIÓN CRÍTICA: ID MANUAL OBLIGATORIO ---
+
     id = models.IntegerField(primary_key=True)
 
     user_email = models.CharField(max_length=150)
     nombre = models.CharField(max_length=150)
-    # Lista de IDs de móviles
+
     elementos = JSONField(default=list)
     fecha_creacion = models.DateTimeField(default=timezone.now)
 

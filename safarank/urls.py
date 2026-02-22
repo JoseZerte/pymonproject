@@ -10,7 +10,7 @@ urlpatterns = [
     path('registro/', views.registrar_usuario, name='registro'),
     path('logout/', views.logout_usuario, name='logout'),
 
-    # NUEVA ESTRUCTURA
+
     path('dashboard/', views.dashboard, name='dashboard'),  # Nuevo Menú Principal
     path('catalogo/', views.catalogo, name='catalogo'),  # Antes era 'inicio'
 
@@ -21,7 +21,7 @@ urlpatterns = [
     path('ranking/<int:ranking_id>/', views.ver_ranking, name='ver_ranking'),
     path('ranking/borrar/<int:ranking_id>/', views.borrar_ranking, name='borrar_ranking'),
 
-    # NUEVO: Ruta para guardar el orden del ranking (AJAX)
+
     path('ranking/guardar-orden/', views.guardar_orden_ranking, name='guardar_orden_ranking'),
 
     # Admin
