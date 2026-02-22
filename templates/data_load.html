@@ -4,40 +4,43 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0"><i class="bi bi-folder-plus"></i> Importación de Datos (Admin)</h4>
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-cloud-upload"></i> Carga de Datos (CSV)</h4>
                 </div>
-                <div class="card-body">
-
-                    <h5 class="card-title">Actualizar Catálogo</h5>
-                    <p class="card-text text-muted">
-                        Sube un archivo CSV con las columnas: <code>name, price, ratings, imgURL, ram, storage</code>.
-                    </p>
-
-                    {% if error %}
-                        <div class="alert alert-danger" role="alert">
-                            {{ error }}
-                        </div>
-                    {% endif %}
+                <div class="card-body p-5">
 
                     {% if mensaje %}
-                        <div class="alert alert-success" role="alert">
-                            {{ mensaje }}
+                        <div class="alert alert-success border-success">
+                            <i class="bi bi-check-circle-fill"></i> {{ mensaje }}
                         </div>
                     {% endif %}
+
+                    {% if error %}
+                        <div class="alert alert-danger border-danger">
+                            <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <div class="alert alert-info">
+                        <strong>Nota Admin:</strong> Al subir el CSV, se borrarán los móviles actuales y se aplicará automáticamente la conversión de Rupias Indias (INR) a Euros (€).
+                    </div>
 
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        <div class="mb-3">
-                            <label for="csvFile" class="form-label">Selecciona tu archivo CSV</label>
-                            <input class="form-control" type="file" id="csvFile" name="csvFile" accept=".csv" required>
+                        <div class="mb-4">
+                            <label for="csvFile" class="form-label fw-bold">Selecciona tu archivo CSV de Xiaomi</label>
+                            <input class="form-control form-control-lg" type="file" id="csvFile" name="csvFile" accept=".csv" required>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-dark">Subir y Procesar</button>
-                            <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">Volver al Inicio</a>
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-danger btn-lg text-white fw-bold">
+                                <i class="bi bi-gear-fill"></i> Subir y Procesar Base de Datos
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left"></i> Volver al Panel de Control
+                            </a>
                         </div>
                     </form>
 

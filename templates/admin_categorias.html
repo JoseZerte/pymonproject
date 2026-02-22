@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-tags"></i> Gestión de Categorías</h2>
+        <div>
+            <a href="{% url 'crear_categoria' %}" class="btn btn-success fw-bold"><i class="bi bi-plus-lg"></i> Nueva Categoría</a>
+            <a href="{% url 'panel_administracion' %}" class="btn btn-secondary">Volver al Panel</a>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Móviles Asignados</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in categorias %}
+                        <tr>
+                            <td class="ps-4 text-muted">#{{ cat.id }}</td>
+                            <td class="fw-bold">{{ cat.name }}</td>
+                            <td>{{ cat.description }}</td>
+                            <td><span class="badge bg-primary rounded-pill">{{ cat.moviles|length }} modelos</span></td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'editar_categoria' cat.id %}" class="btn btn-sm btn-primary"><i class="bi bi-pencil"></i></a>
+                                <a href="{% url 'borrar_categoria' cat.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Borrar categoría?');"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center p-5 text-muted">Aún no has creado ninguna categoría.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

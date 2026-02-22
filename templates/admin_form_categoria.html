@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-tag-fill"></i> {{ accion }} Categoría</h4>
+                </div>
+                <div class="card-body p-5">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nombre de la Categoría</label>
+                            <input type="text" name="name" class="form-control form-control-lg" value="{{ categoria.name }}" placeholder="Ej: Gama Alta, Batería Infinita..." required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Descripción breve</label>
+                            <input type="text" name="description" class="form-control" value="{{ categoria.description }}" placeholder="Móviles que destacan por..." required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-primary"><i class="bi bi-phone"></i> Selecciona los móviles para esta categoría:</label>
+                            <p class="small text-muted mb-2">Mantén pulsado <code>Ctrl</code> (o <code>Cmd</code> en Mac) para seleccionar varios a la vez.</p>
+                            <select name="moviles" class="form-select" multiple size="10">
+                                {% for movil in moviles_totales %}
+                                    <option value="{{ movil.id }}" {% if movil.id in categoria.moviles %}selected{% endif %}>
+                                        {{ movil.name }} ({{ movil.price|floatformat:2 }} €)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold"><i class="bi bi-check-circle"></i> Guardar Categoría</button>
+                            <a href="{% url 'admin_categorias' %}" class="btn btn-outline-secondary">Cancelar</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

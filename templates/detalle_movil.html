@@ -1,148 +1,184 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<style>
-    /* Estilos para las estrellas */
-    .rate {
-        float: left;
-        height: 46px;
-        padding: 0 10px;
-    }
-    .rate:not(:checked) > input {
-        position:absolute;
-        top:-9999px;
-    }
-    .rate:not(:checked) > label {
-        float:right;
-        width:1em;
-        overflow:hidden;
-        white-space:nowrap;
-        cursor:pointer;
-        font-size:30px;
-        color:#ccc;
-    }
-    .rate:not(:checked) > label:before {
-        content: '★ ';
-    }
-    .rate > input:checked ~ label {
-        color: #ffc700;
-    }
-    .rate:not(:checked) > label:hover,
-    .rate:not(:checked) > label:hover ~ label {
-        color: #deb217;
-    }
-    .rate > input:checked + label:hover,
-    .rate > input:checked + label:hover ~ label,
-    .rate > input:checked ~ label:hover,
-    .rate > input:checked ~ label:hover ~ label,
-    .rate > label:hover ~ input:checked ~ label {
-        color: #c59b08;
-    }
-</style>
+<div class="container mt-5 mb-5">
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-5">
-            <div class="card shadow border-0">
-                <img src="{{ movil.imgURL }}" class="card-img-top p-4" alt="{{ movil.name }}">
-                <div class="card-body">
-                    <h2 class="card-title">{{ movil.name }}</h2>
-                    <h3 class="text-warning fw-bold">{{ movil.price }} €</h3>
-                    </div>
+    <div class="mb-4">
+        <a href="{% url 'catalogo' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left"></i> Volver al catálogo
+        </a>
+    </div>
+
+    <div class="row g-5">
+
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white p-4 d-flex align-items-center justify-content-center" style="min-height: 400px;">
+                <img src="{{ movil.imgURL }}" class="img-fluid" style="max-height: 350px; object-fit: contain;" alt="{{ movil.name }}">
             </div>
 
-            <div class="card mt-3 shadow-sm border-warning">
-                <div class="card-header bg-warning text-dark fw-bold">
-                    <i class="bi bi-bookmark-plus"></i> Guardar en mis listas
-                </div>
-                <div class="card-body">
-                    {% if mis_listas %}
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="btn_ranking" value="true">
-                            <label class="form-label">Elige una lista:</label>
-                            <div class="input-group">
-                                <select name="ranking_seleccionado" class="form-select">
-                                    {% for lista in mis_listas %}
-                                        <option value="{{ lista.id }}">{{ lista.nombre }}</option>
-                                    {% endfor %}
-                                </select>
-                                <button type="submit" class="btn btn-dark">Guardar</button>
-                            </div>
-                        </form>
-                    {% else %}
-                        <p class="small text-muted">No tienes listas creadas.</p>
-                        <a href="{% url 'mis_rankings' %}" class="btn btn-sm btn-outline-dark w-100">Crear una lista ahora</a>
-                    {% endif %}
+            <div class="card border-0 shadow-sm rounded-4 bg-light">
+                <div class="card-body p-4 d-flex justify-content-between text-center">
+                    <div>
+                        <i class="bi bi-cpu text-primary fs-3"></i>
+                        <h6 class="fw-bold mt-2 mb-0">RAM</h6>
+                        <p class="text-muted small mb-0">{{ movil.ram }} GB</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-hdd text-success fs-3"></i>
+                        <h6 class="fw-bold mt-2 mb-0">Almacenaje</h6>
+                        <p class="text-muted small mb-0">{{ movil.storage }} GB</p>
+                    </div>
+                    <div>
+                        <i class="bi bi-battery-charging text-danger fs-3"></i>
+                        <h6 class="fw-bold mt-2 mb-0">Batería</h6>
+                        <p class="text-muted small mb-0">{{ movil.battery }} mAh</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-7">
-            <div class="card mb-4 shadow-sm">
-                <div class="card-header bg-dark text-white">
-                    <h5 class="mb-0">Tu Valoración</h5>
-                </div>
-                <div class="card-body">
-                    {% if ya_votado %}
-                        <div class="alert alert-success">
-                            <i class="bi bi-check-circle-fill"></i> Ya has valorado este móvil.
-                        </div>
+        <div class="col-lg-7">
+            <h1 class="fw-bold mb-2">{{ movil.name }}</h1>
+
+            <div class="d-flex align-items-center mb-5 gap-3">
+                <h2 class="text-success fw-bold mb-0">{{ movil.price|floatformat:2 }} €</h2>
+                <span class="badge bg-dark text-warning fs-6 px-3 py-2 rounded-pill">
+                    <i class="bi bi-star-fill"></i> Nota Media: {{ movil.ratings }}
+                </span>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4" style="background-color: #f8f9fa; border-left: 5px solid #ffc107 !important;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-bookmark-plus text-warning"></i> Guardar en mi Tier List</h5>
+                    {% if mis_listas %}
+                        <form method="post" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <input type="hidden" name="btn_ranking" value="true">
+                            <select name="ranking_seleccionado" class="form-select border-0 shadow-sm" required>
+                                <option value="" selected disabled>Elige una de tus listas...</option>
+                                {% for lista in mis_listas %}
+                                    <option value="{{ lista.id }}">{{ lista.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-warning fw-bold px-4 shadow-sm">Guardar</button>
+                        </form>
                     {% else %}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <p class="text-muted mb-0">Aún no has creado ninguna lista.</p>
+                            <a href="{% url 'mis_rankings' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">Crear lista nueva</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-5" style="border-left: 5px solid #0d6efd !important;">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-chat-square-text text-primary"></i> Tu Opinión</h5>
+
+                    {% if ya_votado %}
+                        <div id="vista-lectura">
+                            <div class="alert alert-success border-0 bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-check-circle-fill"></i> Ya has dejado tu opinión sobre este móvil.
+                            </div>
+                            <div class="p-3 bg-light rounded-3 mb-3 text-center">
+                                <h3 class="text-warning mb-2">
+                                    {% if mi_valoracion.puntuacion >= 1 %}★{% endif %}
+                                    {% if mi_valoracion.puntuacion >= 2 %}★{% endif %}
+                                    {% if mi_valoracion.puntuacion >= 3 %}★{% endif %}
+                                    {% if mi_valoracion.puntuacion >= 4 %}★{% endif %}
+                                    {% if mi_valoracion.puntuacion == 5 %}★{% endif %}
+                                </h3>
+                                <p class="fst-italic text-secondary mb-0">"{{ mi_valoracion.comentario }}"</p>
+                            </div>
+                            <button type="button" class="btn btn-outline-primary w-100 fw-bold rounded-pill" onclick="mostrarFormulario()">
+                                <i class="bi bi-pencil-square"></i> Modificar mi reseña
+                            </button>
+                        </div>
+                    {% endif %}
+
+                    <div id="formulario-valoracion" {% if ya_votado %}style="display: none;"{% endif %}>
                         <form method="post">
                             {% csrf_token %}
                             <input type="hidden" name="btn_votar" value="true">
 
-                            <div class="mb-3">
-                                <label>Puntuación:</label><br>
-                                <div class="rate">
-                                    <input type="radio" id="star5" name="rating" value="5" />
-                                    <label for="star5" title="text">5 stars</label>
-                                    <input type="radio" id="star4" name="rating" value="4" />
-                                    <label for="star4" title="text">4 stars</label>
-                                    <input type="radio" id="star3" name="rating" value="3" />
-                                    <label for="star3" title="text">3 stars</label>
-                                    <input type="radio" id="star2" name="rating" value="2" />
-                                    <label for="star2" title="text">2 stars</label>
-                                    <input type="radio" id="star1" name="rating" value="1" />
-                                    <label for="star1" title="text">1 star</label>
+                            <div class="mb-3 text-center">
+                                <label class="fw-bold text-muted mb-2">Puntuación (De 1 a 5)</label><br>
+                                <div class="rate d-inline-block">
+                                    <input type="radio" id="star5" name="rating" value="5" {% if mi_valoracion.puntuacion == 5 %}checked{% endif %} /> <label for="star5">5</label>
+                                    <input type="radio" id="star4" name="rating" value="4" {% if mi_valoracion.puntuacion == 4 %}checked{% endif %} /> <label for="star4">4</label>
+                                    <input type="radio" id="star3" name="rating" value="3" {% if mi_valoracion.puntuacion == 3 %}checked{% endif %} /> <label for="star3">3</label>
+                                    <input type="radio" id="star2" name="rating" value="2" {% if mi_valoracion.puntuacion == 2 %}checked{% endif %} /> <label for="star2">2</label>
+                                    <input type="radio" id="star1" name="rating" value="1" {% if mi_valoracion.puntuacion == 1 %}checked{% endif %} /> <label for="star1">1</label>
                                 </div>
-                                <div style="clear:both;"></div>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Tu opinión:</label>
-                                <textarea name="comentario" class="form-control" rows="3" required></textarea>
+                                <textarea name="comentario" class="form-control bg-light border-0" rows="3" placeholder="¿Qué te parece este móvil? Escribe tu reseña aquí..." required>{% if mi_valoracion %}{{ mi_valoracion.comentario }}{% endif %}</textarea>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100">Enviar Opinión</button>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary fw-bold rounded-pill py-2">
+                                    <i class="bi bi-send"></i> Guardar Reseña
+                                </button>
+                                {% if ya_votado %}
+                                    <button type="button" class="btn btn-link text-muted text-decoration-none" onclick="ocultarFormulario()">Cancelar modificación</button>
+                                {% endif %}
+                            </div>
                         </form>
-                    {% endif %}
+                    </div>
                 </div>
             </div>
 
-            <h4>Comentarios</h4>
-            <div class="list-group">
-                {% for val in valoraciones %}
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">{{ val.user_email }}</h6>
-                            <small class="text-muted">{{ val.fecha|date:"d/m/Y" }}</small>
-                        </div>
-                        <div class="text-warning">
-                            {% if val.puntuacion >= 1 %}★{% endif %}
-                            {% if val.puntuacion >= 2 %}★{% endif %}
-                            {% if val.puntuacion >= 3 %}★{% endif %}
-                            {% if val.puntuacion >= 4 %}★{% endif %}
-                            {% if val.puntuacion == 5 %}★{% endif %}
-                        </div>
-                        <p class="mb-1">{{ val.comentario }}</p>
-                    </div>
-                {% empty %}
-                    <div class="alert alert-light">Sin comentarios.</div>
-                {% endfor %}
-            </div>
         </div>
     </div>
+
+    <hr class="my-5 opacity-25">
+
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-10">
+            <h4 class="fw-bold mb-4"><i class="bi bi-people"></i> Opiniones de la Comunidad</h4>
+
+            {% for val in valoraciones %}
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+                <div class="card-body p-4 d-flex gap-3">
+                    <div class="text-center">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fs-4" style="width: 50px; height: 50px;">
+                            {{ val.user_email|make_list|first|upper }}
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <h6 class="fw-bold mb-0 text-dark">{{ val.user_email|truncatechars:15 }}</h6>
+                            <small class="text-muted">{{ val.fecha|date:"d M Y" }}</small>
+                        </div>
+                        <div class="text-warning small mb-2">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= val.puntuacion %}★{% else %}☆{% endif %}
+                            {% endfor %}
+                        </div>
+                        <p class="mb-0 text-secondary">{{ val.comentario }}</p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+                <div class="text-center p-5 bg-light rounded-4">
+                    <i class="bi bi-chat-square-dots fs-1 text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">Sé el primero en dejar una opinión sobre este dispositivo.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
 </div>
+
+<script>
+    function mostrarFormulario() {
+        document.getElementById('vista-lectura').style.display = 'none';
+        document.getElementById('formulario-valoracion').style.display = 'block';
+    }
+    function ocultarFormulario() {
+        document.getElementById('vista-lectura').style.display = 'block';
+        document.getElementById('formulario-valoracion').style.display = 'none';
+    }
+</script>
 {% endblock %}

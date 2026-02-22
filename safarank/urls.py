@@ -27,5 +27,18 @@ urlpatterns = [
     # Admin
     path('panel-admin/', views.panel_administracion, name='panel_administracion'),
     path('cargar-datos/', views.cargar_datos, name='cargar_datos'),
-path('estadisticas/', views.estadisticas, name='estadisticas'),
+
+
+    path('gestion/elementos/', views.admin_catalogo, name='admin_catalogo'),
+    path('gestion/elementos/crear/', views.crear_movil, name='crear_movil'),
+    path('gestion/elementos/editar/<int:movil_id>/', views.editar_movil, name='editar_movil'),
+    path('gestion/elementos/borrar/<int:movil_id>/', views.borrar_movil, name='borrar_movil'),
+
+    path('gestion/categorias/', views.admin_categorias, name='admin_categorias'),
+    path('gestion/categorias/crear/', views.crear_categoria, name='crear_categoria'),
+    path('gestion/categorias/editar/<int:cat_id>/', views.editar_categoria, name='editar_categoria'),
+    path('gestion/categorias/borrar/<int:cat_id>/', views.borrar_categoria, name='borrar_categoria'),
+
+    path('panel-admin/estadisticas/', views.estadisticas_globales, name='estadisticas_globales'),
 ]
+

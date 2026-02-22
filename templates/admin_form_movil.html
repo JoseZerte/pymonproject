@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square"></i> {{ accion }} Móvil Xiaomi</h4>
+                </div>
+                <div class="card-body p-5">
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Nombre del Móvil</label>
+                            <input type="text" name="name" class="form-control form-control-lg" value="{{ movil.name }}" placeholder="Ej: Xiaomi Redmi Note 13 Pro" required>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold text-success">Precio (€)</label>
+                                <input type="number" step="0.01" name="price" class="form-control" value="{{ movil.price|stringformat:'f'|default:'0' }}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">URL de la Imagen</label>
+                                <input type="url" name="imgURL" class="form-control" value="{{ movil.imgURL }}" placeholder="https://..." required>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Memoria RAM (GB)</label>
+                                <input type="number" name="ram" class="form-control" value="{{ movil.ram|default:'4' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Almacenamiento (GB)</label>
+                                <input type="number" name="storage" class="form-control" value="{{ movil.storage|default:'64' }}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Batería (mAh)</label>
+                                <input type="number" name="battery" class="form-control" value="{{ movil.battery|default:'5000' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-3">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold"><i class="bi bi-check-circle"></i> Guardar Datos en MongoDB</button>
+                            <a href="{% url 'admin_catalogo' %}" class="btn btn-outline-secondary">Cancelar y volver</a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

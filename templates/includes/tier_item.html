@@ -1,0 +1,13 @@
+<div class="tier-item" data-id="{{ movil.id }}">
+    <img src="{{ movil.imgURL }}" alt="{{ movil.name }}">
+    <p title="{{ movil.name }}">{{ movil.name }}</p>
+
+    <form method="post" style="margin: 0;">
+        {% csrf_token %}
+        <input type="hidden" name="borrar_movil" value="true">
+        <input type="hidden" name="movil_id_borrar" value="{{ movil.id }}">
+        <button type="submit" class="delete-btn-tier" title="Quitar de la Tier List">
+            <i class="bi bi-x"></i>
+        </button>
+    </form>
+</div>

@@ -1,57 +1,117 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <h1 class="fw-bold"><i class="bi bi-bar-chart-line"></i> Estadísticas de la Comunidad</h1>
-        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver al Dashboard</a>
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-bar-chart-fill text-primary"></i> Estadísticas y Supervisión</h2>
+
+        {% if user.rol == 'admin' %}
+            <a href="{% url 'panel_administracion' %}" class="btn btn-secondary">Volver al Panel Admin</a>
+        {% else %}
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver al Menú</a>
+        {% endif %}
     </div>
 
-    <div class="row g-4 mb-5 text-center">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white border-0 shadow-sm rounded-4 h-100 p-3 text-center">
+                <h3><i class="bi bi-star-fill"></i> Total Valoraciones</h3>
+                <h1 class="display-3 fw-bold">{{ total }}</h1>
+            </div>
+        </div>
+
+        {% if user.rol == 'admin' %}
+        <div class="col-md-4">
+            <div class="card bg-success text-white border-0 shadow-sm rounded-4 h-100 p-3 text-center">
+                <h3><i class="bi bi-people-fill"></i> Total Usuarios</h3>
+                <h1 class="display-3 fw-bold">{{ usuarios|length }}</h1>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="col-md-4">
+            <div class="card bg-warning text-dark border-0 shadow-sm rounded-4 h-100 p-3 text-center">
+                <h3><i class="bi bi-phone-fill"></i> Top Móvil</h3>
+                <h4 class="fw-bold mt-3">{{ top_moviles.0.nombre|default:"Ninguno" }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
         <div class="col-md-6">
-            <div class="card shadow-sm border-primary h-100">
-                <div class="card-body">
-                    <h5 class="text-muted">Total de Valoraciones</h5>
-                    <div class="display-4 fw-bold text-primary">{{ total_votos }}</div>
-                    <p>Opiniones registradas</p>
-                </div>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-dark text-white fw-bold">Top 5 Móviles Mejor Valorados</div>
+                <ul class="list-group list-group-flush">
+                    {% for m in top_moviles %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            {{ m.nombre }}
+                            <span class="badge bg-success rounded-pill fs-6">{{ m.media }} ★ ({{ m.votos }} votos)</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">No hay valoraciones suficientes.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
+
         <div class="col-md-6">
-            <div class="card shadow-sm border-success h-100">
-                <div class="card-body">
-                    <h5 class="text-muted">Nota Media Global</h5>
-                    <div class="display-4 fw-bold text-success">{{ promedio_global }}</div>
-                    <p>Sobre 5 estrellas</p>
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-dark text-white fw-bold">Promedio por Categoría</div>
+                <ul class="list-group list-group-flush">
+                    {% for c in stats_cat %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                            {{ c.nombre }}
+                            <span class="badge bg-warning text-dark rounded-pill fs-6">{{ c.media }} ★ ({{ c.votos }} votos)</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">No hay categorías con votos.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        {% if user.rol == 'admin' %}
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-danger text-white fw-bold">Supervisión: Usuarios Registrados</div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead><tr><th>Email / Usuario</th><th>Rol</th></tr></thead>
+                        <tbody>
+                            {% for u in usuarios %}
+                                <tr>
+                                    <td>{{ u.email }}</td>
+                                    <td><span class="badge {% if u.rol == 'admin' %}bg-danger{% else %}bg-secondary{% endif %}">{{ u.rol|upper }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </div>
 
-    <h3 class="mb-4">🏆 Top 5 Móviles Mejor Valorados (Por usuarios)</h3>
-
-    {% if top_moviles %}
-    <div class="list-group shadow">
-        {% for item in top_moviles %}
-        <div class="list-group-item d-flex justify-content-between align-items-center p-3">
-            <div class="d-flex align-items-center">
-                <span class="badge bg-warning text-dark fs-5 me-3">#{{ forloop.counter }}</span>
-                <img src="{{ item.obj.imgURL }}" style="width: 50px; height: 50px; object-fit: contain;" class="me-3">
-                <div>
-                    <h5 class="mb-0">{{ item.obj.name }}</h5>
-                    <small class="text-muted">{{ item.total }} votos recibidos</small>
-                </div>
-            </div>
-            <div class="text-end">
-                <span class="fs-4 fw-bold text-success">{{ item.media }} ★</span>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-info text-dark fw-bold">Últimas Actividades (Valoraciones)</div>
+                <ul class="list-group list-group-flush">
+                    {% for v in v_recientes %}
+                        <li class="list-group-item p-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ v.user_email|truncatechars:15 }}</strong>
+                                <span class="text-warning">{% for i in "12345" %}{% if forloop.counter <= v.puntuacion %}★{% else %}☆{% endif %}{% endfor %}</span>
+                            </div>
+                            <small class="text-primary">{{ v.nombre_movil }}</small>
+                            <p class="mb-0 text-muted small mt-1">"{{ v.comentario|truncatechars:50 }}"</p>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-muted">Nadie ha comentado aún.</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <div class="alert alert-warning text-center">
-            Aún no hay suficientes datos. ¡Empieza a valorar móviles para ver el ranking!
+
+        {% endif %}
         </div>
-    {% endif %}
 </div>
 {% endblock %}

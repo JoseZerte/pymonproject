@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-phone"></i> Gestión de Móviles (CRUD)</h2>
+        <div>
+            <a href="{% url 'crear_movil' %}" class="btn btn-success fw-bold"><i class="bi bi-plus-lg"></i> Añadir Nuevo Móvil</a>
+            <a href="{% url 'panel_administracion' %}" class="btn btn-secondary">Volver al Panel</a>
+        </div>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre del Modelo</th>
+                            <th>Precio</th>
+                            <th>RAM / ROM</th>
+                            <th class="text-end pe-4">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movil in moviles %}
+                        <tr>
+                            <td class="ps-4 text-muted">#{{ movil.id }}</td>
+                            <td><img src="{{ movil.imgURL }}" style="height: 40px; width: 40px; object-fit: contain;"></td>
+                            <td class="fw-bold">{{ movil.name }}</td>
+                            <td class="text-success fw-bold">{{ movil.price|floatformat:2 }} €</td>
+                            <td>{{ movil.ram }}GB / {{ movil.storage }}GB</td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'editar_movil' movil.id %}" class="btn btn-sm btn-primary" title="Editar"><i class="bi bi-pencil"></i></a>
+                                <a href="{% url 'borrar_movil' movil.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que quieres borrar el {{ movil.name }}? Esta acción es irreversible.');" title="Borrar"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

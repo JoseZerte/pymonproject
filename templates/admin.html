@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-danger"><i class="bi bi-shield-lock-fill"></i> Panel de Administración Central</h2>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">Volver al Menú</a>
+    </div>
+
+    <div class="alert alert-danger shadow-sm border-danger mb-5">
+        <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> ¡Atención Administrador!</h5>
+        <p class="mb-0">Estás en la zona de control absoluto. Las acciones que realices aquí afectan a toda la base de datos de MongoDB y a todos los usuarios de la plataforma.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="display-3 text-danger mb-3"><i class="bi bi-file-earmark-spreadsheet"></i></div>
+                    <h4 class="card-title fw-bold">Actualizar Base de Datos</h4>
+                    <p class="text-muted">Carga un nuevo archivo CSV para sobrescribir los móviles actuales. Aplicará conversión automática de precios a Euros.</p>
+                    <a href="{% url 'cargar_datos' %}" class="btn btn-danger w-100 mt-3">Ir al Cargador CSV</a>
+                </div>
+            </div>
+        </div>
+
+<div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="display-3 text-primary mb-3"><i class="bi bi-database"></i></div>
+                    <h4 class="card-title fw-bold">Gestión de Móviles</h4>
+                    <p class="text-muted">Añade móviles nuevos a mano, edita sus precios y specs, o elimina modelos antiguos de la base de datos.</p>
+                    <a href="{% url 'admin_catalogo' %}" class="btn btn-primary w-100 mt-3">Gestionar Elementos</a>
+                </div>
+            </div>
+        </div>
+
+<div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="display-3 text-warning mb-3"><i class="bi bi-tags"></i></div>
+                    <h4 class="card-title fw-bold">Editor de Categorías</h4>
+                    <p class="text-muted">Crea y edita categorías (Gama Alta, Gama Media) y asigna los móviles que pertenecen a ellas.</p>
+                    <a href="{% url 'admin_categorias' %}" class="btn btn-warning text-dark fw-bold w-100 mt-3">Gestionar Categorías</a>
+                </div>
+            </div>
+        </div>
+
+      <div class="col-md-6">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center py-5">
+                    <div class="display-3 text-success mb-3"><i class="bi bi-bar-chart-line"></i></div>
+                    <h4 class="card-title fw-bold">Estadísticas y Supervisión</h4>
+                    <p class="text-muted">Revisa las cuentas de usuario, las valoraciones recientes y los promedios globales del sistema.</p>
+                    <a href="{% url 'estadisticas_globales' %}" class="btn btn-success fw-bold w-100 mt-3">Ver Dashboard Global</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

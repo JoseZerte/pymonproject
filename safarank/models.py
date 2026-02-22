@@ -56,7 +56,7 @@ class MovilXiaomi(models.Model):
 
     name = models.CharField(max_length=255)
     ratings = models.FloatField(default=0.0)
-    price = models.IntegerField(default=0)
+    price = models.IntegerField(default=0.0)
     imgURL = models.URLField(max_length=900)
     camera = models.IntegerField(default=0)
     display = models.CharField(max_length=100, default="N/A")
@@ -76,6 +76,10 @@ class MovilXiaomi(models.Model):
 
 class Categoria(models.Model):
     code = models.IntegerField(unique=True)
+
+    #esto arregla el error ese del code
+    code = models.CharField(max_length=100, null=True, blank=True, default="CAT")
+
     name = models.CharField(max_length=150, unique=True)
     description = models.CharField(max_length=300)
     moviles = JSONField(default=list, blank=True)

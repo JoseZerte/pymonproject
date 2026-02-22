@@ -9,6 +9,23 @@
         </a>
     </div>
 
+{% if categorias %}
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'catalogo' %}" class="btn {% if not cat_actual %}btn-dark{% else %}btn-outline-dark{% endif %} rounded-pill fw-bold">
+                Todos los Móviles
+            </a>
+            {% for cat in categorias %}
+                <a href="{% url 'catalogo' %}?cat={{ cat.id }}" class="btn {% if cat_actual == cat.id %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-pill fw-bold">
+                    {{ cat.name }} <span class="badge bg-light text-danger rounded-pill ms-1">{{ cat.moviles|length }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+
+
     <div class="row g-4">
         {% for movil in moviles %}
         <div class="col-md-3 col-sm-6">
@@ -26,14 +43,28 @@
                         <p class="mb-2 text-muted small">RAM: {{ movil.ram }}GB | ROM: {{ movil.storage }}GB</p>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="price-tag">{{ movil.price }} €</span>
+                            <span class="price-tag">{{ movil.price|floatformat:2 }} €</span>
                             <span class="badge bg-success">★ {{ movil.ratings }}</span>
                         </div>
 
-                        <a href="{% url 'detalle_movil' movil.id %}" class="btn btn-xiaomi w-100 btn-sm">
-                            Ver y Votar
+                        <a href="{% url 'detalle_movil' movil.id %}" class="btn btn-xiaomi w-100 btn-sm mb-2">
+                            <i class="bi bi-eye"></i> Ver y Votar
                         </a>
-                    </div>
+
+                        {% if mis_listas %}
+                        <form method="post" action="{% url 'catalogo' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="btn_ranking_rapido" value="true">
+                            <input type="hidden" name="movil_id" value="{{ movil.id }}">
+                            <select name="ranking_seleccionado" class="form-select form-select-sm" onchange="this.form.submit()">
+                                <option value="" selected disabled>+ Añadir a Tier List...</option>
+                                {% for lista in mis_listas %}
+                                    <option value="{{ lista.id }}">{{ lista.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                        {% endif %}
+                        </div>
                 </div>
             </div>
         </div>

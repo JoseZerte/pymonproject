@@ -3,80 +3,160 @@
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<style>
+    /* Diseño de las Cajas del Ranking */
+    .tier-row { display: flex; border: 1px solid #111; border-bottom: none; background: #1a1a1a; min-height: 100px; }
+    .tier-row:last-of-type { border-bottom: 1px solid #111; }
+
+    .tier-label {
+        width: 100px; display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; font-weight: 900; border-right: 1px solid #111;
+    }
+
+    /* COLORES ESTILO PODIUM (Oro, Plata, Bronce, etc.) */
+    .tier-S .tier-label { background-color: #ffd700; color: #856404; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); } /* TOP 1: ORO */
+    .tier-A .tier-label { background-color: #c0c0c0; color: #383d41; } /* TOP 2: PLATA */
+    .tier-B .tier-label { background-color: #cd7f32; color: white; } /* TOP 3: BRONCE */
+    .tier-C .tier-label { background-color: #4CAF50; color: white; } /* TOP 4: VERDE */
+    .tier-D .tier-label { background-color: #2196F3; color: white; } /* TOP 5: AZUL */
+
+    .tier-pool { flex: 1; display: flex; flex-wrap: wrap; padding: 10px; gap: 10px; min-height: 100px; }
+
+    /* Zona del banquillo (No clasificados) */
+    .unranked-area { border: 2px dashed #888; border-radius: 8px; min-height: 150px; padding: 15px; background: #f0f0f0; display: flex; flex-wrap: wrap; gap: 10px; }
+
+    /* Diseño del cuadrito del móvil */
+    .tier-item {
+        width: 90px; background: #333; border-radius: 5px; padding: 5px; cursor: grab; position: relative;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;
+    }
+    .unranked-area .tier-item { background: #fff; border: 1px solid #ccc; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+    .tier-item img { width: 100%; height: 75px; object-fit: contain; background: white; border-radius: 3px;}
+    .tier-item p { margin: 5px 0 0 0; font-size: 0.7rem; color: #fff; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;}
+    .unranked-area .tier-item p { color: #333; }
+
+    /* Botón flotante para borrar */
+    .delete-btn-tier {
+        position: absolute; top: -8px; right: -8px; background: red; color: white; border-radius: 50%;
+        border: none; width: 22px; height: 22px; font-size: 12px; display: none; justify-content: center; align-items: center; cursor: pointer; z-index: 10;
+    }
+    .tier-item:hover .delete-btn-tier { display: flex; }
+
+    .sortable-ghost { opacity: 0.4; }
+</style>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 bg-white p-3 rounded shadow-sm">
         <div>
-            <h2>Ranking: <span class="text-primary">{{ ranking.nombre }}</span></h2>
-            <p class="text-muted">Arrastra los elementos para cambiar el orden</p>
+            <h2 class="mb-0 fw-bold">🏆 Ranking: <span class="text-primary">{{ ranking.nombre }}</span></h2>
+            <p class="text-muted mb-0 small">Arrastra los móviles a su puesto correspondiente.</p>
         </div>
-        <div>
-            <button onclick="guardarOrden()" class="btn btn-success me-2">
+        <div class="d-flex gap-2">
+            <button onclick="guardarTierList()" class="btn btn-success fw-bold">
                 <i class="bi bi-save"></i> Guardar Orden
             </button>
-            <a href="{% url 'mis_rankings' %}" class="btn btn-secondary">Volver</a>
+            <a href="{% url 'mis_rankings' %}" class="btn btn-outline-secondary">Volver</a>
         </div>
     </div>
 
-    <div id="lista-ranking" class="row row-cols-1">
-        {% for movil in moviles %}
-        <div class="col mb-2 item-movil" data-id="{{ movil.id }}">
-            <div class="card shadow-sm flex-row align-items-center p-2" style="cursor: move;">
-                <div class="p-3 fs-3 text-muted">
-                    <i class="bi bi-grip-vertical"></i>
-                </div>
-                <img src="{{ movil.imgURL }}" class="img-fluid" style="height: 80px; width: 80px; object-fit: contain;">
-                <div class="card-body">
-                    <h5 class="card-title mb-0">{{ movil.name }}</h5>
-                    <p class="text-success fw-bold mb-0">{{ movil.price }} €</p>
-                </div>
-                <div class="p-3">
-                    <form method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="borrar_movil" value="true">
-                        <input type="hidden" name="movil_id_borrar" value="{{ movil.id }}">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                </div>
+    <div class="tier-list-container shadow mb-4">
+
+        <div class="tier-row tier-S">
+            <div class="tier-label">#1</div>
+            <div class="tier-pool" id="tier-S" data-tier="S">
+                {% for movil in tiers_data.S %}
+                    {% include "includes/tier_item.html" %}
+                {% endfor %}
             </div>
         </div>
-        {% empty %}
-        <div class="alert alert-warning text-center">
-            Esta lista está vacía.
-            <a href="{% url 'catalogo' %}" class="alert-link">Ve al catálogo</a> para añadir móviles.
+
+        <div class="tier-row tier-A">
+            <div class="tier-label">#2</div>
+            <div class="tier-pool" id="tier-A" data-tier="A">
+                {% for movil in tiers_data.A %}
+                    {% include "includes/tier_item.html" %}
+                {% endfor %}
+            </div>
         </div>
+
+        <div class="tier-row tier-B">
+            <div class="tier-label">#3</div>
+            <div class="tier-pool" id="tier-B" data-tier="B">
+                {% for movil in tiers_data.B %}
+                    {% include "includes/tier_item.html" %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tier-row tier-C">
+            <div class="tier-label">#4</div>
+            <div class="tier-pool" id="tier-C" data-tier="C">
+                {% for movil in tiers_data.C %}
+                    {% include "includes/tier_item.html" %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tier-row tier-D">
+            <div class="tier-label">#5</div>
+            <div class="tier-pool" id="tier-D" data-tier="D">
+                {% for movil in tiers_data.D %}
+                    {% include "includes/tier_item.html" %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <h5 class="fw-bold mt-5"><i class="bi bi-box"></i> Banquillo (Sin clasificar)</h5>
+    <div class="unranked-area shadow-sm" id="tier-unranked" data-tier="unranked">
+        {% for movil in tiers_data.unranked %}
+            {% include "includes/tier_item.html" %}
         {% endfor %}
     </div>
+
 </div>
 
 <script>
-    var el = document.getElementById('lista-ranking');
-    var sortable = Sortable.create(el, {
+    // 1. CONFIGURAR DRAG & DROP
+    const sortableOptions = {
+        group: 'tierlist',
         animation: 150,
         ghostClass: 'sortable-ghost'
+    };
+
+    const tiers = ['tier-S', 'tier-A', 'tier-B', 'tier-C', 'tier-D', 'tier-unranked'];
+    const sortableInstances = {};
+
+    tiers.forEach(id => {
+        sortableInstances[id] = Sortable.create(document.getElementById(id), sortableOptions);
     });
 
-    function guardarOrden() {
-        var orden = sortable.toArray();
-        var rankingId = {{ ranking.id }};
+    // 2. FUNCIÓN PARA GUARDAR TODA LA LISTA
+    function guardarTierList() {
+        const payload = {
+            'S': sortableInstances['tier-S'].toArray(),
+            'A': sortableInstances['tier-A'].toArray(),
+            'B': sortableInstances['tier-B'].toArray(),
+            'C': sortableInstances['tier-C'].toArray(),
+            'D': sortableInstances['tier-D'].toArray(),
+            'unranked': sortableInstances['tier-unranked'].toArray(),
+        };
 
         fetch("{% url 'guardar_orden_ranking' %}", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                ranking_id: rankingId,
-                orden: orden
+                ranking_id: {{ ranking.id }},
+                tiers: payload
             })
         })
         .then(response => response.json())
         .then(data => {
             if(data.status === 'ok') {
-                alert("¡Orden guardado correctamente!");
+                alert("✅ Ranking guardado con éxito!");
             } else {
-                alert("Error: " + data.message);
+                alert("❌ Error: " + data.message);
             }
         });
     }
