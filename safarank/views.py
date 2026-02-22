@@ -145,11 +145,6 @@ def detalle_movil(request, movil_id):
             mi_valoracion.comentario = comentario
             mi_valoracion.save(using='mongodb')
 
-
-            Valoracion.objects.using('mongodb').filter(
-                user_email=request.user.email, movil_id=movil_id
-            ).exclude(id=mi_valoracion.id).delete()
-
             mensaje = "¡Valoración actualizada!" if ya_votado else "¡Valoración guardada!"
             messages.success(request, mensaje)
             return redirect('detalle_movil', movil_id=movil_id)

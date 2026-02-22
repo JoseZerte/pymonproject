@@ -1,6 +1,48 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    .rate {
+        float: none;
+        display: inline-block;
+        height: 46px;
+        padding: 0 10px;
+    }
+    .rate:not(:checked) > input {
+        position:absolute;
+        top:-9999px;
+        clip:rect(0,0,0,0);
+    }
+    .rate:not(:checked) > label {
+        float:right;
+        width:1em;
+        overflow:hidden;
+        white-space:nowrap;
+        cursor:pointer;
+        font-size:40px;
+        color:#ccc;
+        margin-bottom: 0;
+        line-height: 46px;
+    }
+    .rate:not(:checked) > label:before {
+        content: '★ ';
+    }
+    .rate > input:checked ~ label {
+        color: #ffc700;
+    }
+    .rate:not(:checked) > label:hover,
+    .rate:not(:checked) > label:hover ~ label {
+        color: #deb217;
+    }
+    .rate > input:checked + label:hover,
+    .rate > input:checked + label:hover ~ label,
+    .rate > input:checked ~ label:hover,
+    .rate > input:checked ~ label:hover ~ label,
+    .rate > label:hover ~ input:checked ~ label {
+        color: #c59b08;
+    }
+</style>
+
 <div class="container mt-5 mb-5">
 
     <div class="mb-4">
@@ -81,12 +123,10 @@
                                 <i class="bi bi-check-circle-fill"></i> Ya has dejado tu opinión sobre este móvil.
                             </div>
                             <div class="p-3 bg-light rounded-3 mb-3 text-center">
-                                <h3 class="text-warning mb-2">
-                                    {% if mi_valoracion.puntuacion >= 1 %}★{% endif %}
-                                    {% if mi_valoracion.puntuacion >= 2 %}★{% endif %}
-                                    {% if mi_valoracion.puntuacion >= 3 %}★{% endif %}
-                                    {% if mi_valoracion.puntuacion >= 4 %}★{% endif %}
-                                    {% if mi_valoracion.puntuacion == 5 %}★{% endif %}
+                                <h3 class="text-warning mb-2" style="font-size: 40px;">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= mi_valoracion.puntuacion %}★{% else %}☆{% endif %}
+                                    {% endfor %}
                                 </h3>
                                 <p class="fst-italic text-secondary mb-0">"{{ mi_valoracion.comentario }}"</p>
                             </div>
@@ -102,13 +142,22 @@
                             <input type="hidden" name="btn_votar" value="true">
 
                             <div class="mb-3 text-center">
-                                <label class="fw-bold text-muted mb-2">Puntuación (De 1 a 5)</label><br>
-                                <div class="rate d-inline-block">
-                                    <input type="radio" id="star5" name="rating" value="5" {% if mi_valoracion.puntuacion == 5 %}checked{% endif %} /> <label for="star5">5</label>
-                                    <input type="radio" id="star4" name="rating" value="4" {% if mi_valoracion.puntuacion == 4 %}checked{% endif %} /> <label for="star4">4</label>
-                                    <input type="radio" id="star3" name="rating" value="3" {% if mi_valoracion.puntuacion == 3 %}checked{% endif %} /> <label for="star3">3</label>
-                                    <input type="radio" id="star2" name="rating" value="2" {% if mi_valoracion.puntuacion == 2 %}checked{% endif %} /> <label for="star2">2</label>
-                                    <input type="radio" id="star1" name="rating" value="1" {% if mi_valoracion.puntuacion == 1 %}checked{% endif %} /> <label for="star1">1</label>
+                                <label class="fw-bold text-muted mb-0">Toca las estrellas para puntuar:</label><br>
+                                <div class="rate">
+                                    <input type="radio" id="star5" name="rating" value="5" {% if mi_valoracion.puntuacion == 5 %}checked{% endif %} />
+                                    <label for="star5" title="5 estrellas"></label>
+
+                                    <input type="radio" id="star4" name="rating" value="4" {% if mi_valoracion.puntuacion == 4 %}checked{% endif %} />
+                                    <label for="star4" title="4 estrellas"></label>
+
+                                    <input type="radio" id="star3" name="rating" value="3" {% if mi_valoracion.puntuacion == 3 %}checked{% endif %} />
+                                    <label for="star3" title="3 estrellas"></label>
+
+                                    <input type="radio" id="star2" name="rating" value="2" {% if mi_valoracion.puntuacion == 2 %}checked{% endif %} />
+                                    <label for="star2" title="2 estrellas"></label>
+
+                                    <input type="radio" id="star1" name="rating" value="1" {% if mi_valoracion.puntuacion == 1 %}checked{% endif %} />
+                                    <label for="star1" title="1 star"></label>
                                 </div>
                             </div>
 
@@ -151,7 +200,7 @@
                             <h6 class="fw-bold mb-0 text-dark">{{ val.user_email|truncatechars:15 }}</h6>
                             <small class="text-muted">{{ val.fecha|date:"d M Y" }}</small>
                         </div>
-                        <div class="text-warning small mb-2">
+                        <div class="text-warning small mb-2 fs-5">
                             {% for i in "12345" %}
                                 {% if forloop.counter <= val.puntuacion %}★{% else %}☆{% endif %}
                             {% endfor %}
